@@ -1,0 +1,9 @@
+cafe_culture_blog:
+    resource: '@CafeCultureBundle/src/Controller/BlogController.php'
+    type: attribute
+    prefix: /blog
+
+cafe_culture_api:
+    resource: '@CafeCultureBundle/src/Controller/ApiController.php'
+    type: attribute
+    prefix: /api/cafe

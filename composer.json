@@ -1,0 +1,80 @@
+{
+    "name": "cafe-culture/blog-bundle",
+    "description": "Un bundle Symfony complet pour un blog dédié à la culture du café : origines, torréfaction, méthodes de préparation et recettes.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": [
+        "symfony",
+        "bundle",
+        "blog",
+        "cafe",
+        "coffee",
+        "culture",
+        "cms"
+    ],
+    "homepage": "https://github.com/cafe-culture/blog-bundle",
+    "authors": [
+        {
+            "name": "CafeCulture Team",
+            "email": "hello@cafe-culture.dev",
+            "homepage": "https://cafe-culture.dev",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "symfony/framework-bundle": "^6.4|^7.0|^8.0",
+        "symfony/twig-bundle": "^6.4|^7.0|^8.0",
+        "symfony/form": "^6.4|^7.0|^8.0",
+        "symfony/validator": "^6.4|^7.0|^8.0",
+        "symfony/security-bundle": "^6.4|^7.0|^8.0",
+        "symfony/http-foundation": "^6.4|^7.0|^8.0",
+        "symfony/asset": "^6.4|^7.0|^8.0",
+        "doctrine/doctrine-bundle": "^2.11",
+        "doctrine/orm": "^2.15|^3.0",
+        "doctrine/migrations": "^3.6",
+        "twig/extra-bundle": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "symfony/phpunit-bridge": "^6.4|^7.0|^8.0",
+        "symfony/browser-kit": "^6.4|^7.0|^8.0",
+        "symfony/css-selector": "^6.4|^7.0|^8.0",
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
+        "fakerphp/faker": "^1.23"
+    },
+    "autoload": {
+        "psr-4": {
+            "CafeCulture\\BlogBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CafeCulture\\BlogBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/flex": true
+        }
+    },
+    "extra": {
+        "symfony": {
+            "require": "^6.4|^7.0|^8.0"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "cs-fix": "vendor/bin/php-cs-fixer fix"
+    },
+    "suggest": {
+        "twig/markdown-extra": "Pour le rendu Markdown dans les articles (^3.0)",
+        "michelf/php-markdown": "Requis avec twig/markdown-extra (^2.0)",
+        "knplabs/knp-paginator-bundle": "Pour la pagination avancee (^6.3)",
+        "vich/uploader-bundle": "Pour la gestion des uploads images (^2.4)",
+        "liip/imagine-bundle": "Pour le redimensionnement des images (^2.10)",
+        "stof/doctrine-extensions-bundle": "Pour le slug automatique Gedmo (^1.9)",
+        "doctrine/doctrine-fixtures-bundle": "Pour charger les donnees de demo"
+    }
+}

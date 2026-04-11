@@ -1,0 +1,110 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Tableau de bord — Administration{% endblock %}
+
+{% block body %}
+<div class="container admin-layout">
+
+    {# ── Sidebar admin ───────────────────────────────────────────── #}
+    <aside class="admin-sidebar">
+        <nav class="admin-nav">
+            <a class="admin-nav__brand" href="{{ path('cafe_culture_admin_dashboard') }}">
+                ☕ Administration
+            </a>
+            <ul>
+                <li><a href="{{ path('cafe_culture_admin_dashboard') }}" class="active"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="{{ path('cafe_culture_admin_articles_index') }}"><i class="fas fa-newspaper"></i> Articles <span class="admin-badge">{{ stats.articles_total }}</span></a></li>
+                <li><a href="{{ path('cafe_culture_admin_article_new') }}"><i class="fas fa-plus"></i> Nouvel article</a></li>
+                <li><a href="{{ path('cafe_culture_admin_categories_index') }}"><i class="fas fa-th-list"></i> Catégories <span class="admin-badge">{{ stats.categories }}</span></a></li>
+                <li><a href="{{ path('cafe_culture_admin_comments_index') }}"><i class="fas fa-comments"></i> Commentaires {% if stats.comments_pending > 0 %}<span class="admin-badge admin-badge--alert">{{ stats.comments_pending }}</span>{% endif %}</a></li>
+                <li class="admin-nav__divider"></li>
+                <li><a href="{{ path('cafe_culture_index') }}" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le blog</a></li>
+                <li><a href="{{ path('cafe_culture_sitemap') }}" target="_blank"><i class="fas fa-sitemap"></i> Sitemap XML</a></li>
+                <li><a href="{{ path('cafe_culture_rss') }}" target="_blank"><i class="fas fa-rss"></i> Flux RSS</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    {# ── Contenu principal ───────────────────────────────────────── #}
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Tableau de bord</h1>
+            <a class="btn btn-coffee" href="{{ path('cafe_culture_admin_article_new') }}">
+                <i class="fas fa-plus"></i> Nouvel article
+            </a>
+        </header>
+
+        {# KPI Cards #}
+        <div class="admin-kpis">
+            <div class="kpi-card kpi-card--green">
+                <div class="kpi-card__icon"><i class="fas fa-check-circle"></i></div>
+                <div class="kpi-card__value">{{ stats.articles_published }}</div>
+                <div class="kpi-card__label">Articles publiés</div>
+            </div>
+            <div class="kpi-card kpi-card--amber">
+                <div class="kpi-card__icon"><i class="fas fa-edit"></i></div>
+                <div class="kpi-card__value">{{ stats.articles_draft }}</div>
+                <div class="kpi-card__label">Brouillons</div>
+            </div>
+            <div class="kpi-card kpi-card--brown">
+                <div class="kpi-card__icon"><i class="fas fa-th-list"></i></div>
+                <div class="kpi-card__value">{{ stats.categories }}</div>
+                <div class="kpi-card__label">Catégories</div>
+            </div>
+            <div class="kpi-card kpi-card--red">
+                <div class="kpi-card__icon"><i class="fas fa-clock"></i></div>
+                <div class="kpi-card__value">{{ stats.comments_pending }}</div>
+                <div class="kpi-card__label">Commentaires en attente</div>
+            </div>
+        </div>
+
+        <div class="admin-grid">
+            {# Articles les plus vus #}
+            <section class="admin-card">
+                <h2 class="admin-card__title"><i class="fas fa-fire"></i> Articles les plus vus</h2>
+                <table class="admin-table">
+                    <thead><tr><th>Titre</th><th>Catégorie</th><th>Vues</th><th>Note</th></tr></thead>
+                    <tbody>
+                    {% for article in stats.most_viewed %}
+                    <tr>
+                        <td><a href="{{ path('cafe_culture_admin_article_edit', {id: article.id}) }}">{{ article.title|slice(0,45) }}{% if article.title|length > 45 %}…{% endif %}</a></td>
+                        <td>{% if article.category %}<span class="badge badge--sm" style="background:{{ article.category.color }}">{{ article.category.name }}</span>{% endif %}</td>
+                        <td><strong>{{ article.views }}</strong></td>
+                        <td>{{ article.averageRating > 0 ? article.averageRating ~ '/5' : '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-muted">Aucun article.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            {# Articles récents #}
+            <section class="admin-card">
+                <h2 class="admin-card__title"><i class="fas fa-clock"></i> Derniers articles</h2>
+                <table class="admin-table">
+                    <thead><tr><th>Titre</th><th>Statut</th><th>Date</th><th></th></tr></thead>
+                    <tbody>
+                    {% for article in stats.recent %}
+                    <tr>
+                        <td>{{ article.title|slice(0,40) }}{% if article.title|length > 40 %}…{% endif %}</td>
+                        <td>
+                            <span class="status-badge status-badge--{{ article.status }}">
+                                {{ article.status == 'published' ? 'Publié' : (article.status == 'draft' ? 'Brouillon' : 'Archivé') }}
+                            </span>
+                        </td>
+                        <td>{{ article.createdAt|date('d/m/Y') }}</td>
+                        <td>
+                            <a href="{{ path('cafe_culture_admin_article_edit', {id: article.id}) }}" title="Modifier"><i class="fas fa-edit"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="admin-card__footer">
+                    <a href="{{ path('cafe_culture_admin_articles_index') }}">Voir tous les articles →</a>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+{% endblock %}

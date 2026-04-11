@@ -1,0 +1,14 @@
+{
+    "manifest": {
+        "bundles": {
+            "Monseigneur\\CafeCultureBundle\\CafeCultureBundle": ["all"]
+        },
+        "copy-from-recipe": {
+            "config/": "%CONFIG_DIR%/"
+        },
+        "env": {
+            "CAFE_CULTURE_POSTS_PER_PAGE": "9"
+        }
+    },
+    "aliases": ["cafe-culture", "cafe-blog"]
+}

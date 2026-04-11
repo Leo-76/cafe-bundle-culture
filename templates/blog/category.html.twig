@@ -1,0 +1,33 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}{{ category.name }} — La Culture du Café{% endblock %}
+{% block meta_description %}{{ category.description ?? 'Tous nos articles sur la thématique ' ~ category.name ~ '.' }}{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <header class="page-header" style="--accent: {{ category.color }}">
+        <span class="page-header__icon"><i class="fas {{ category.icon }}"></i></span>
+        <h1 class="page-header__title">{{ category.name }}</h1>
+        {% if category.description %}
+        <p class="page-header__description">{{ category.description }}</p>
+        {% endif %}
+        <p class="page-header__count">{{ articles|length }} article{{ articles|length > 1 ? 's' : '' }}</p>
+    </header>
+
+    <div class="articles-grid">
+        {% for article in articles %}
+        {% include '@CafeCulture/partials/article_card.html.twig' with {article: article} %}
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-state__icon">📭</span>
+            <p>Aucun article dans cette catégorie pour le moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if total_pages is defined and total_pages > 1 %}
+    {% include '@CafeCulture/partials/pagination.html.twig' with {current: current_page, total: total_pages} %}
+    {% endif %}
+
+</div>
+{% endblock %}

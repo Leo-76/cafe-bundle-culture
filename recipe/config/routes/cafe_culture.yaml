@@ -1,0 +1,21 @@
+# Routes du CafeCultureBundle
+# Generees automatiquement par Symfony Flex lors du composer require
+
+cafe_culture_blog:
+    resource: '@CafeCultureBlogBundle/src/Controller/BlogController.php'
+    type: attribute
+    prefix: /blog
+
+cafe_culture_api:
+    resource: '@CafeCultureBlogBundle/src/Controller/ApiController.php'
+    type: attribute
+    prefix: /api/cafe
+
+cafe_culture_sitemap:
+    resource: '@CafeCultureBlogBundle/src/Controller/SitemapController.php'
+    type: attribute
+
+cafe_culture_admin:
+    resource: '@CafeCultureBlogBundle/src/Controller/AdminController.php'
+    type: attribute
+    prefix: /admin/cafe

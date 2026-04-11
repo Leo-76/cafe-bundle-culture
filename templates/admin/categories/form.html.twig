@@ -1,0 +1,51 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}{{ mode == 'create' ? 'Nouvelle catégorie' : 'Modifier : ' ~ category.name }} — Administration{% endblock %}
+
+{% block body %}
+<div class="container admin-layout">
+    {% include '@CafeCulture/admin/partials/sidebar.html.twig' %}
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <a class="back-link" href="{{ path('cafe_culture_admin_categories_index') }}">← Retour aux catégories</a>
+                <h1><i class="fas fa-{{ mode == 'create' ? 'plus' : 'edit' }}"></i>
+                    {{ mode == 'create' ? 'Nouvelle catégorie' : 'Modifier la catégorie' }}</h1>
+            </div>
+        </header>
+
+        <div style="max-width:640px">
+            {{ form_start(form, {attr: {class: 'form'}}) }}
+
+            <div class="admin-card">
+                <h2 class="admin-card__title">Informations</h2>
+                <div class="form-group">{{ form_label(form.name) }}{{ form_widget(form.name) }}{{ form_errors(form.name) }}</div>
+                <div class="form-group">{{ form_label(form.description) }}{{ form_widget(form.description) }}{{ form_errors(form.description) }}</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ form_label(form.color) }}
+                        {{ form_widget(form.color) }}
+                        <p class="form-help">Couleur d'accentuation de la catégorie.</p>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.icon) }}
+                        {{ form_widget(form.icon) }}
+                        <p class="form-help">Ex : <code>fa-coffee</code>, <code>fa-fire</code>, <code>fa-globe</code></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.position) }}
+                    {{ form_widget(form.position) }}
+                    <p class="form-help">Ordre d'affichage dans la navigation (0 = premier).</p>
+                </div>
+                <div class="admin-card__footer">
+                    {{ form_widget(form.submit) }}
+                    <a href="{{ path('cafe_culture_admin_categories_index') }}" class="btn btn--outline" style="margin-left:.75rem">Annuler</a>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </main>
+</div>
+{% endblock %}

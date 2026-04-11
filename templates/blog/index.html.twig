@@ -1,0 +1,154 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+
+{% block title %}Accueil — La Culture du Café{% endblock %}
+{% block meta_description %}Découvrez nos articles sur la culture du café : origines, torréfaction, méthodes de préparation, recettes et histoire.{% endblock %}
+
+{% block body %}
+
+{# ── Hero / Articles mis en avant ───────────────────────────────── #}
+{% if featured|length > 0 %}
+<section class="hero">
+    <div class="container">
+        <div class="hero__grid">
+            {# Article principal #}
+            {% set main = featured[0] %}
+            <article class="hero__main card card--featured">
+                {% if main.coverImage %}
+                <div class="card__image-wrap">
+                    <img src="{{ asset('uploads/cafe-culture/' ~ main.coverImage) }}" alt="{{ main.title }}" loading="eager">
+                    <div class="card__image-overlay"></div>
+                </div>
+                {% else %}
+                <div class="card__image-placeholder card__image-placeholder--large">☕</div>
+                {% endif %}
+                <div class="card__body card__body--overlay">
+                    <span class="badge" style="background:{{ main.category.color }}">{{ main.category.name }}</span>
+                    <h1 class="card__title card__title--xl">
+                        <a href="{{ path('cafe_culture_article_show', {slug: main.slug}) }}">{{ main.title }}</a>
+                    </h1>
+                    <p class="card__excerpt">{{ main.excerpt ?? main.content|excerpt(160) }}</p>
+                    <div class="card__meta">
+                        <span><i class="fas fa-clock"></i> {{ main.readingTimeMinutes }} min</span>
+                        <span><i class="fas fa-eye"></i> {{ main.views }}</span>
+                        {% if main.publishedAt %}<span><i class="fas fa-calendar"></i> {{ main.publishedAt|date('d/m/Y') }}</span>{% endif %}
+                    </div>
+                </div>
+            </article>
+
+            {# Articles secondaires #}
+            <div class="hero__secondary">
+                {% for article in featured|slice(1, 2) %}
+                <article class="card card--compact">
+                    {% if article.coverImage %}
+                    <img class="card__thumb" src="{{ asset('uploads/cafe-culture/' ~ article.coverImage) }}" alt="{{ article.title }}" loading="lazy">
+                    {% else %}
+                    <div class="card__thumb-placeholder">☕</div>
+                    {% endif %}
+                    <div class="card__body">
+                        <span class="badge badge--sm" style="background:{{ article.category.color }}">{{ article.category.name }}</span>
+                        <h2 class="card__title card__title--md">
+                            <a href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">{{ article.title }}</a>
+                        </h2>
+                        <div class="card__meta">
+                            <span><i class="fas fa-clock"></i> {{ article.readingTimeMinutes }} min</span>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{# ── Catégories ─────────────────────────────────────────────────── #}
+<section class="section section--categories">
+    <div class="container">
+        <h2 class="section__title">Explorer par thème</h2>
+        <div class="categories-grid">
+            {% for cat in cafe_categories %}
+            <a class="category-card" href="{{ path('cafe_culture_category', {slug: cat.slug}) }}" style="--cat-color: {{ cat.color }}">
+                <span class="category-card__icon"><i class="fas {{ cat.icon }}"></i></span>
+                <span class="category-card__name">{{ cat.name }}</span>
+                <span class="category-card__count">{{ cat.getPublishedArticlesCount() }} article{{ cat.getPublishedArticlesCount() > 1 ? 's' : '' }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# ── Articles récents ───────────────────────────────────────────── #}
+<section class="section">
+    <div class="container">
+        <div class="section__header">
+            <h2 class="section__title">Derniers articles</h2>
+            <span class="section__count">{{ total_articles }} articles au total</span>
+        </div>
+
+        <div class="articles-grid">
+            {% for article in articles %}
+            <article class="card">
+                <a class="card__image-link" href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">
+                    {% if article.coverImage %}
+                    <img class="card__image" src="{{ asset('uploads/cafe-culture/' ~ article.coverImage) }}" alt="{{ article.title }}" loading="lazy">
+                    {% else %}
+                    <div class="card__image card__image--placeholder">
+                        <span>☕</span>
+                        {% if article.coffeeOrigin %}
+                        <small>{{ coffee_flag(article.coffeeOrigin) }} {{ article.coffeeOrigin }}</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </a>
+
+                <div class="card__body">
+                    <div class="card__top">
+                        <a class="badge" style="background:{{ article.category.color }}" href="{{ path('cafe_culture_category', {slug: article.category.slug}) }}">
+                            {{ article.category.name }}
+                        </a>
+                        {% if article.averageRating > 0 %}
+                        <span class="card__rating">{{ article.averageRating|stars }}</span>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="card__title">
+                        <a href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">{{ article.title }}</a>
+                    </h3>
+
+                    <p class="card__excerpt">{{ article.excerpt ?? article.content|excerpt }}</p>
+
+                    {% if article.aromaProfile %}
+                    <div class="card__aromas">
+                        {% for aroma in article.aromaProfile|slice(0, 3) %}
+                        {{ aroma_badge(aroma) }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="card__footer">
+                        <div class="card__meta">
+                            <span><i class="fas fa-clock"></i> {{ article.readingTimeMinutes }} min</span>
+                            <span><i class="fas fa-eye"></i> {{ article.views }}</span>
+                        </div>
+                        <a class="card__link" href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">
+                            Lire l'article <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% else %}
+            <div class="empty-state">
+                <span class="empty-state__icon">☕</span>
+                <p>Aucun article publié pour le moment. Revenez bientôt !</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {# Pagination #}
+        {% if total_pages > 1 %}
+        {% include '@CafeCulture/partials/pagination.html.twig' with {current: current_page, total: total_pages} %}
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

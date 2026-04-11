@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: "PHP ${{ matrix.php }} / Symfony ${{ matrix.symfony }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:     ['8.2', '8.3', '8.4']
+        symfony: ['6.4.*', '7.2.*', '8.0.*']
+        exclude:
+          # Symfony 8 requiert PHP 8.2+, deja couvert
+          - php: '8.1'
+            symfony: '8.0.*'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, pdo_sqlite, mbstring
+          coverage: none
+
+      - name: Install Symfony Flex globally
+        run: composer global require --no-progress --no-scripts --no-plugins symfony/flex
+
+      - name: Pin Symfony version
+        run: composer config extra.symfony.require "${{ matrix.symfony }}"
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --testdox
+        env:
+          DATABASE_URL: "sqlite:///:memory:"
+
+  code-quality:
+    name: Code Quality (PHP 8.3)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: intl, pdo_sqlite, mbstring
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: PHP Syntax Check
+        run: find src tests -name "*.php" | xargs php -l
+
+      - name: PHP CS Fixer (dry-run)
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff src/ tests/ --rules=@Symfony
+        continue-on-error: true

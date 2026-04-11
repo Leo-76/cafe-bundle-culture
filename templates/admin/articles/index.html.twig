@@ -1,0 +1,89 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Articles — Administration{% endblock %}
+
+{% block body %}
+<div class="container admin-layout">
+    {% include '@CafeCulture/admin/partials/sidebar.html.twig' %}
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1><i class="fas fa-newspaper"></i> Articles</h1>
+            <a class="btn btn-coffee" href="{{ path('cafe_culture_admin_article_new') }}">
+                <i class="fas fa-plus"></i> Nouvel article
+            </a>
+        </header>
+
+        {# Filtres par statut #}
+        <div class="admin-filters">
+            <a class="filter-btn {{ not status_filter ? 'filter-btn--active' : '' }}" href="{{ path('cafe_culture_admin_articles_index') }}">Tous</a>
+            {% for status in statuses %}
+            <a class="filter-btn {{ status_filter == status ? 'filter-btn--active' : '' }}"
+               href="{{ path('cafe_culture_admin_articles_index', {status: status}) }}">
+                {{ status == 'published' ? 'Publiés' : (status == 'draft' ? 'Brouillons' : 'Archivés') }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <table class="admin-table admin-table--full">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Catégorie</th>
+                    <th>Statut</th>
+                    <th>Vues</th>
+                    <th>Note</th>
+                    <th>Créé le</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for article in articles %}
+            <tr>
+                <td class="text-muted">#{{ article.id }}</td>
+                <td>
+                    <a href="{{ path('cafe_culture_admin_article_edit', {id: article.id}) }}" class="admin-link">
+                        {{ article.title|slice(0, 55) }}{% if article.title|length > 55 %}…{% endif %}
+                    </a>
+                    {% if article.featured %}<span class="star-badge" title="Mis en avant">⭐</span>{% endif %}
+                </td>
+                <td>
+                    {% if article.category %}
+                    <span class="badge badge--sm" style="background:{{ article.category.color }}">{{ article.category.name }}</span>
+                    {% else %}—{% endif %}
+                </td>
+                <td>
+                    <span class="status-badge status-badge--{{ article.status }}">
+                        {{ {'published': 'Publié', 'draft': 'Brouillon', 'archived': 'Archivé'}[article.status] ?? article.status }}
+                    </span>
+                </td>
+                <td>{{ article.views }}</td>
+                <td>{{ article.averageRating > 0 ? article.averageRating ~ ' ★' : '—' }}</td>
+                <td>{{ article.createdAt|date('d/m/Y') }}</td>
+                <td class="admin-actions">
+                    <a href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}" target="_blank" title="Voir" class="action-btn action-btn--view"><i class="fas fa-eye"></i></a>
+                    <a href="{{ path('cafe_culture_admin_article_edit', {id: article.id}) }}" title="Modifier" class="action-btn action-btn--edit"><i class="fas fa-edit"></i></a>
+                    {% if not article.isPublished() %}
+                    <form method="post" action="{{ path('cafe_culture_admin_article_publish', {id: article.id}) }}" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('publish_' ~ article.id) }}">
+                        <button type="submit" title="Publier" class="action-btn action-btn--publish" onclick="return confirm('Publier cet article ?')">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="{{ path('cafe_culture_admin_article_delete', {id: article.id}) }}" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ article.id) }}">
+                        <button type="submit" title="Supprimer" class="action-btn action-btn--delete" onclick="return confirm('Supprimer définitivement cet article ?')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="empty-state">Aucun article trouvé.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+
+{% block title %}{{ article.metaTitle ?? article.title ~ ' — La Culture du Café' }}{% endblock %}
+{% block meta_description %}{{ article.metaDescription ?? article.excerpt }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ article.title }}{% endblock %}
+{% block og_description %}{{ article.excerpt }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ article.title|e('js') }}",
+  "datePublished": "{{ article.publishedAt ? article.publishedAt|date('c') : '' }}",
+  "dateModified": "{{ article.updatedAt ? article.updatedAt|date('c') : article.publishedAt|date('c') }}",
+  "author": { "@type": "Person", "name": "{{ article.authorName|e('js') }}" },
+  "publisher": { "@type": "Organization", "name": "La Culture du Café" }
+}
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container article-layout">
+
+    {# ── Fil d'Ariane ─────────────────────────────────────────────── #}
+    <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <a href="{{ path('cafe_culture_index') }}">Accueil</a>
+        <span aria-hidden="true">›</span>
+        <a href="{{ path('cafe_culture_category', {slug: article.category.slug}) }}">{{ article.category.name }}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{{ article.title|slice(0, 50) }}{% if article.title|length > 50 %}…{% endif %}</span>
+    </nav>
+
+    <div class="article-layout__grid">
+
+        {# ── Article ───────────────────────────────────────────────── #}
+        <article class="article" itemscope itemtype="https://schema.org/Article">
+
+            {# En-tête #}
+            <header class="article__header">
+                <a class="badge badge--lg" style="background:{{ article.category.color }}"
+                   href="{{ path('cafe_culture_category', {slug: article.category.slug}) }}">
+                    <i class="fas {{ article.category.icon }}"></i> {{ article.category.name }}
+                </a>
+
+                <h1 class="article__title" itemprop="headline">{{ article.title }}</h1>
+
+                <div class="article__meta">
+                    {% if article.authorName %}
+                    <span class="article__author"><i class="fas fa-user"></i> {{ article.authorName }}</span>
+                    {% endif %}
+                    {% if article.publishedAt %}
+                    <time class="article__date" datetime="{{ article.publishedAt|date('c') }}" itemprop="datePublished">
+                        <i class="fas fa-calendar"></i> {{ article.publishedAt|date('d F Y') }}
+                    </time>
+                    {% endif %}
+                    <span class="article__reading"><i class="fas fa-clock"></i> {{ article.readingTimeMinutes }} min de lecture</span>
+                    <span class="article__views"><i class="fas fa-eye"></i> {{ article.views }} vue{{ article.views > 1 ? 's' : '' }}</span>
+                </div>
+
+                {# Profil aromatique #}
+                {% if article.aromaProfile %}
+                <div class="article__aromas">
+                    <span class="article__aromas-label"><i class="fas fa-wine-glass-alt"></i> Profil aromatique :</span>
+                    {% for aroma in article.aromaProfile %}
+                    {{ aroma_badge(aroma) }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {# Origine géographique #}
+                {% if article.coffeeOrigin %}
+                <div class="article__origin">
+                    {{ coffee_flag(article.coffeeOrigin) }}
+                    <a href="{{ path('cafe_culture_origin', {origin: article.coffeeOrigin}) }}">
+                        Café d'origine : <strong>{{ article.coffeeOrigin }}</strong>
+                    </a>
+                </div>
+                {% endif %}
+
+                {# Image de couverture #}
+                {% if article.coverImage %}
+                <figure class="article__cover">
+                    <img src="{{ asset('uploads/cafe-culture/' ~ article.coverImage) }}" alt="{{ article.title }}" itemprop="image">
+                </figure>
+                {% endif %}
+            </header>
+
+            {# Corps de l'article #}
+            <div class="article__content prose" itemprop="articleBody">
+                {{ article.content|nl2br }}
+            </div>
+
+            {# Tags #}
+            {% if article.tags|length > 0 %}
+            <footer class="article__tags">
+                <span><i class="fas fa-tags"></i> Tags :</span>
+                {% for tag in article.tags %}
+                <a class="tag" href="{{ path('cafe_culture_tag', {slug: tag.slug}) }}">{{ tag.name }}</a>
+                {% endfor %}
+            </footer>
+            {% endif %}
+
+            {# Note / Rating #}
+            <div class="article__rating" data-article-id="{{ article.id }}">
+                <h3>Notez cet article</h3>
+                {% if article.averageRating > 0 %}
+                <p class="rating__average">
+                    Note moyenne : {{ article.averageRating|stars }} <strong>{{ article.averageRating }}/5</strong>
+                    ({{ article.ratings|length }} avis)
+                </p>
+                {% endif %}
+                <div class="rating__stars" role="group" aria-label="Attribuer une note">
+                    {% for i in 1..5 %}
+                    <button class="rating__star" data-score="{{ i }}" aria-label="Donner {{ i }} étoile{{ i > 1 ? 's' : '' }}">
+                        <i class="fa{{ i <= article.averageRating ? 's' : 'r' }} fa-star"></i>
+                    </button>
+                    {% endfor %}
+                </div>
+                <p class="rating__feedback" aria-live="polite"></p>
+            </div>
+
+        </article>
+
+        {# ── Sidebar ───────────────────────────────────────────────── #}
+        <aside class="sidebar">
+            {% include '@CafeCulture/partials/sidebar.html.twig' %}
+        </aside>
+
+    </div>{# /.article-layout__grid #}
+
+    {# ── Commentaires ────────────────────────────────────────────── #}
+    <section class="comments section">
+        <h2 class="section__title">
+            <i class="fas fa-comments"></i>
+            {{ article.approvedComments|length }} commentaire{{ article.approvedComments|length > 1 ? 's' : '' }}
+        </h2>
+
+        {% for comment in article.approvedComments %}
+        <div class="comment">
+            <div class="comment__avatar">{{ comment.authorName|first|upper }}</div>
+            <div class="comment__body">
+                <div class="comment__header">
+                    <strong class="comment__author">{{ comment.authorName }}</strong>
+                    <time class="comment__date">{{ comment.createdAt|date('d/m/Y à H:i') }}</time>
+                </div>
+                <p class="comment__content">{{ comment.content|nl2br }}</p>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-state">Soyez le premier à commenter cet article !</p>
+        {% endfor %}
+
+        {# Formulaire commentaire #}
+        <div class="comment-form">
+            <h3><i class="fas fa-pen"></i> Laisser un commentaire</h3>
+            {{ form_start(form, {attr: {class: 'form'}}) }}
+            <div class="form__row">
+                {{ form_row(form.authorName) }}
+                {{ form_row(form.authorEmail) }}
+            </div>
+            {{ form_row(form.content) }}
+            {{ form_row(form.submit) }}
+            {{ form_end(form) }}
+        </div>
+    </section>
+
+    {# ── Articles similaires ─────────────────────────────────────── #}
+    {% if related|length > 0 %}
+    <section class="section section--related">
+        <h2 class="section__title">Articles similaires</h2>
+        <div class="articles-grid articles-grid--3">
+            {% for art in related %}
+            <article class="card card--sm">
+                <div class="card__body">
+                    <span class="badge badge--sm" style="background:{{ art.category.color }}">{{ art.category.name }}</span>
+                    <h3 class="card__title card__title--sm">
+                        <a href="{{ path('cafe_culture_article_show', {slug: art.slug}) }}">{{ art.title }}</a>
+                    </h3>
+                    <p class="card__excerpt card__excerpt--sm">{{ art.content|excerpt(100) }}</p>
+                    <a class="card__link" href="{{ path('cafe_culture_article_show', {slug: art.slug}) }}">Lire →</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>{# /.container #}
+{% endblock %}

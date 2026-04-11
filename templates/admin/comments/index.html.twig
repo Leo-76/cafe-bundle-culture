@@ -1,0 +1,61 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Commentaires en attente — Administration{% endblock %}
+
+{% block body %}
+<div class="container admin-layout">
+    {% include '@CafeCulture/admin/partials/sidebar.html.twig' %}
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1><i class="fas fa-comments"></i> Commentaires en attente</h1>
+            <span class="admin-badge admin-badge--lg">{{ pending|length }} en attente</span>
+        </header>
+
+        {% if pending|length == 0 %}
+        <div class="admin-card empty-state">
+            <span class="empty-state__icon">✅</span>
+            <p>Aucun commentaire en attente de modération. Tout est à jour !</p>
+        </div>
+        {% else %}
+        <div class="comments-moderation">
+            {% for comment in pending %}
+            <div class="admin-card comment-card">
+                <div class="comment-card__header">
+                    <div class="comment-card__author">
+                        <span class="comment__avatar">{{ comment.authorName|first|upper }}</span>
+                        <div>
+                            <strong>{{ comment.authorName }}</strong>
+                            <small class="text-muted">{{ comment.authorEmail }}</small>
+                        </div>
+                    </div>
+                    <div class="comment-card__meta">
+                        <time>{{ comment.createdAt|date('d/m/Y à H:i') }}</time>
+                        <a href="{{ path('cafe_culture_article_show', {slug: comment.article.slug}) }}" target="_blank" class="admin-link">
+                            → {{ comment.article.title|slice(0,40) }}…
+                        </a>
+                    </div>
+                </div>
+
+                <blockquote class="comment-card__content">{{ comment.content }}</blockquote>
+
+                <div class="comment-card__actions">
+                    <form method="post" action="{{ path('cafe_culture_admin_comment_approve', {id: comment.id}) }}" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('approve_' ~ comment.id) }}">
+                        <button type="submit" class="btn btn-coffee btn--sm">
+                            <i class="fas fa-check"></i> Approuver
+                        </button>
+                    </form>
+                    <form method="post" action="{{ path('cafe_culture_admin_comment_delete', {id: comment.id}) }}" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ comment.id) }}">
+                        <button type="submit" class="btn btn--danger btn--sm" onclick="return confirm('Supprimer ce commentaire ?')">
+                            <i class="fas fa-trash"></i> Refuser & supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

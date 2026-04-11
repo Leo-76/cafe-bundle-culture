@@ -1,0 +1,58 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Catégories — Administration{% endblock %}
+
+{% block body %}
+<div class="container admin-layout">
+    {% include '@CafeCulture/admin/partials/sidebar.html.twig' %}
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1><i class="fas fa-th-list"></i> Catégories</h1>
+            <a class="btn btn-coffee" href="{{ path('cafe_culture_admin_category_new') }}">
+                <i class="fas fa-plus"></i> Nouvelle catégorie
+            </a>
+        </header>
+
+        <div class="admin-card">
+            <table class="admin-table admin-table--full">
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Couleur</th>
+                        <th>Nom</th>
+                        <th>Slug</th>
+                        <th>Articles publiés</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td class="text-muted">{{ category.position }}</td>
+                    <td>
+                        <span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:{{ category.color }};vertical-align:middle;"></span>
+                        {% if category.icon %}
+                        <i class="fas {{ category.icon }}" style="color:{{ category.color }};margin-left:.4rem"></i>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ category.name }}</strong></td>
+                    <td><code class="text-muted">{{ category.slug }}</code></td>
+                    <td>
+                        <a href="{{ path('cafe_culture_category', {slug: category.slug}) }}" target="_blank">
+                            {{ category.getPublishedArticlesCount() }} article{{ category.getPublishedArticlesCount() > 1 ? 's' : '' }}
+                        </a>
+                    </td>
+                    <td class="admin-actions">
+                        <a href="{{ path('cafe_culture_category', {slug: category.slug}) }}" target="_blank" title="Voir" class="action-btn action-btn--view"><i class="fas fa-eye"></i></a>
+                        <a href="{{ path('cafe_culture_admin_category_edit', {id: category.id}) }}" title="Modifier" class="action-btn action-btn--edit"><i class="fas fa-edit"></i></a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="empty-state">Aucune catégorie trouvée.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    CafeCulture\BlogBundle\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/CafeCultureBundle.php'
+
+    # ── Contrôleurs ────────────────────────────────────────────────────────
+    CafeCulture\BlogBundle\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    CafeCulture\BlogBundle\Controller\BlogController:
+        arguments:
+            $postsPerPage: '%cafe_culture.posts_per_page%'
+        tags: ['controller.service_arguments']
+
+    # ── Twig ───────────────────────────────────────────────────────────────
+    CafeCulture\BlogBundle\Twig\CafeCultureExtension:
+        tags: ['twig.extension']
+
+    # ── Repositories ───────────────────────────────────────────────────────
+    CafeCulture\BlogBundle\Repository\ArticleRepository:
+        arguments: { $registry: '@doctrine' }
+        tags: ['doctrine.repository_service']
+
+    CafeCulture\BlogBundle\Repository\CategoryRepository:
+        arguments: { $registry: '@doctrine' }
+        tags: ['doctrine.repository_service']
+
+    CafeCulture\BlogBundle\Repository\TagRepository:
+        arguments: { $registry: '@doctrine' }
+        tags: ['doctrine.repository_service']
+
+    CafeCulture\BlogBundle\Repository\CommentRepository:
+        arguments: { $registry: '@doctrine' }
+        tags: ['doctrine.repository_service']
+
+    CafeCulture\BlogBundle\Repository\RatingRepository:
+        arguments: { $registry: '@doctrine' }
+        tags: ['doctrine.repository_service']
+
+    # ── Services ───────────────────────────────────────────────────────────
+    CafeCulture\BlogBundle\Service\ImageUploadService:
+        arguments:
+            $uploadDir: '%cafe_culture.upload_dir%'
+
+    CafeCulture\BlogBundle\Service\ArticleService: ~
+
+    # ── Fixtures ───────────────────────────────────────────────────────────
+    CafeCulture\BlogBundle\DataFixtures\CafeFixtures:
+        tags: ['doctrine.fixture.orm']
+
+    # ── Commandes ──────────────────────────────────────────────────────────
+    CafeCulture\BlogBundle\Command\ArticleStatsCommand:
+        tags: ['console.command']
+
+    CafeCulture\BlogBundle\Command\PublishDraftCommand:
+        tags: ['console.command']

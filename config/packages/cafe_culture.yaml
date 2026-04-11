@@ -1,0 +1,10 @@
+# Configuration par défaut du CafeCultureBundle
+# Copiez ce fichier dans config/packages/ de votre application Symfony
+
+cafe_culture:
+    posts_per_page: 9
+    upload_dir: '%kernel.project_dir%/public/uploads/cafe-culture'
+    default_locale: 'fr'
+    enable_comments: true
+    enable_ratings: true
+    sitename: 'La Culture du Café'

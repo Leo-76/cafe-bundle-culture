@@ -1,0 +1,175 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}{{ mode == 'create' ? 'Nouvel article' : 'Modifier : ' ~ article.title }} — Administration{% endblock %}
+
+{% block stylesheets %}
+<style>
+.form-control--editor { font-family: 'Courier New', monospace; font-size: .9rem; }
+.char-counter { font-size: .78rem; color: var(--text-muted); text-align: right; }
+.char-counter.over { color: #c62828; }
+.preview-panel { background: var(--cafe-cream); border-radius: var(--radius-md); padding: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container admin-layout">
+    {% include '@CafeCulture/admin/partials/sidebar.html.twig' %}
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <a class="back-link" href="{{ path('cafe_culture_admin_articles_index') }}">← Retour aux articles</a>
+                <h1><i class="fas fa-{{ mode == 'create' ? 'plus' : 'edit' }}"></i>
+                    {{ mode == 'create' ? 'Nouvel article' : 'Modifier l\'article' }}</h1>
+            </div>
+            {% if mode == 'edit' and article.isPublished() %}
+            <a class="btn btn-coffee" href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Voir en ligne
+            </a>
+            {% endif %}
+        </header>
+
+        {{ form_start(form, {attr: {class: 'admin-form', novalidate: 'novalidate'}}) }}
+
+        <div class="admin-form-grid">
+
+            {# ── Colonne principale ───────────────────────────────── #}
+            <div class="admin-form-main">
+
+                <div class="admin-card">
+                    <h2 class="admin-card__title">Contenu</h2>
+                    <div class="form-group">
+                        {{ form_label(form.title) }}
+                        {{ form_widget(form.title) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.content) }}
+                        {{ form_widget(form.content) }}
+                        {{ form_errors(form.content) }}
+                        <p class="form-help">Markdown supporté : **gras**, *italique*, ## Titre, - liste, [lien](url)</p>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.excerpt) }}
+                        {{ form_widget(form.excerpt) }}
+                        <p class="char-counter" id="excerpt-counter">0 / 200 caractères recommandés</p>
+                        {{ form_errors(form.excerpt) }}
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h2 class="admin-card__title">Spécificités café</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.coffeeOrigin) }}
+                            {{ form_widget(form.coffeeOrigin) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.readingTimeMinutes) }}
+                            {{ form_widget(form.readingTimeMinutes) }}
+                            <p class="form-help">Sera calculé automatiquement si laissé à 0.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.aromaProfileText) }}
+                        {{ form_widget(form.aromaProfileText) }}
+                        {{ form_errors(form.aromaProfileText) }}
+                        <p class="form-help">{{ form.aromaProfileText.vars.help }}</p>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h2 class="admin-card__title"><i class="fas fa-search"></i> SEO</h2>
+                    <div class="form-group">
+                        {{ form_label(form.metaTitle) }}
+                        {{ form_widget(form.metaTitle) }}
+                        <p class="char-counter" id="meta-title-counter">0 / 60 caractères recommandés</p>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.metaDescription) }}
+                        {{ form_widget(form.metaDescription) }}
+                        <p class="char-counter" id="meta-desc-counter">0 / 160 caractères recommandés</p>
+                    </div>
+                </div>
+
+            </div>
+
+            {# ── Sidebar formulaire ───────────────────────────────── #}
+            <aside class="admin-form-sidebar">
+
+                <div class="admin-card">
+                    <h2 class="admin-card__title">Publication</h2>
+                    <div class="form-group">
+                        {{ form_label(form.status) }}
+                        {{ form_widget(form.status) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.authorName) }}
+                        {{ form_widget(form.authorName) }}
+                    </div>
+                    <div class="form-check">
+                        {{ form_widget(form.featured) }}
+                        {{ form_label(form.featured) }}
+                    </div>
+                    <div class="admin-card__footer">
+                        {{ form_widget(form.submit) }}
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h2 class="admin-card__title">Classification</h2>
+                    <div class="form-group">
+                        {{ form_label(form.category) }}
+                        {{ form_widget(form.category) }}
+                        {{ form_errors(form.category) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.tags) }}
+                        {{ form_widget(form.tags) }}
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h2 class="admin-card__title">Image de couverture</h2>
+                    {% if mode == 'edit' and article.coverImage %}
+                    <div class="current-image">
+                        <img src="{{ asset('uploads/cafe-culture/' ~ article.coverImage) }}" alt="Image actuelle" style="max-width:100%;border-radius:8px;margin-bottom:.75rem">
+                        <p class="form-help">Une nouvelle image remplacera celle-ci.</p>
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        {{ form_widget(form.coverImageFile) }}
+                        {{ form_errors(form.coverImageFile) }}
+                        <p class="form-help">JPEG, PNG ou WebP. Max 3 Mo.</p>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+
+        {{ form_end(form) }}
+    </main>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Compteurs de caractères
+function initCounter(inputId, counterId, max) {
+    const el      = document.getElementById(inputId) || document.querySelector(`[name*="${inputId}"]`);
+    const counter = document.getElementById(counterId);
+    if (!el || !counter) return;
+    const update = () => {
+        const len = el.value.length;
+        counter.textContent = `${len} / ${max} caractères recommandés`;
+        counter.className = 'char-counter' + (len > max ? ' over' : '');
+    };
+    el.addEventListener('input', update);
+    update();
+}
+document.addEventListener('DOMContentLoaded', () => {
+    initCounter('article_excerpt',        'excerpt-counter',   200);
+    initCounter('article_metaTitle',      'meta-title-counter', 60);
+    initCounter('article_metaDescription','meta-desc-counter', 160);
+});
+</script>
+{% endblock %}

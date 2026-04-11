@@ -1,0 +1,38 @@
+{# partials/article_card.html.twig #}
+<article class="card">
+    <a class="card__image-link" href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">
+        {% if article.coverImage %}
+        <img class="card__image" src="{{ asset('uploads/cafe-culture/' ~ article.coverImage) }}" alt="{{ article.title }}" loading="lazy">
+        {% else %}
+        <div class="card__image card__image--placeholder">
+            <span>☕</span>
+        </div>
+        {% endif %}
+    </a>
+    <div class="card__body">
+        <div class="card__top">
+            <a class="badge" style="background:{{ article.category.color }}" href="{{ path('cafe_culture_category', {slug: article.category.slug}) }}">
+                {{ article.category.name }}
+            </a>
+            {% if article.coffeeOrigin %}
+            <span class="card__origin">{{ coffee_flag(article.coffeeOrigin) }}</span>
+            {% endif %}
+        </div>
+        <h3 class="card__title">
+            <a href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">{{ article.title }}</a>
+        </h3>
+        <p class="card__excerpt">{{ article.excerpt ?? article.content|excerpt }}</p>
+        {% if article.aromaProfile %}
+        <div class="card__aromas">
+            {% for aroma in article.aromaProfile|slice(0, 2) %}{{ aroma_badge(aroma) }}{% endfor %}
+        </div>
+        {% endif %}
+        <div class="card__footer">
+            <div class="card__meta">
+                <span><i class="fas fa-clock"></i> {{ article.readingTimeMinutes }} min</span>
+                <span><i class="fas fa-eye"></i> {{ article.views }}</span>
+            </div>
+            <a class="card__link" href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">Lire →</a>
+        </div>
+    </div>
+</article>

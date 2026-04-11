@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{{ cafe_culture.sitename ?? 'La Culture du Café' }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Le blog de référence sur la culture du café : origines, torréfaction, recettes et méthodes de préparation.{% endblock %}">
+    <meta name="robots" content="index, follow">
+
+    {# Open Graph #}
+    <meta property="og:title" content="{% block og_title %}{{ cafe_culture.sitename ?? 'La Culture du Café' }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:locale" content="fr_FR">
+
+    {# CSS Bundle #}
+    <link rel="stylesheet" href="{{ asset('bundles/cafeculturebundle/css/main.css') }}">
+    {# Font Awesome via CDN #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    {# Google Fonts #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+    {% block stylesheets %}{% endblock %}
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="cafe-culture-theme">
+
+{# ── Navigation ────────────────────────────────────────────────── #}
+<nav class="navbar">
+    <div class="container navbar__inner">
+        <a class="navbar__brand" href="{{ path('cafe_culture_index') }}">
+            <span class="navbar__logo">☕</span>
+            <span class="navbar__name">La Culture du Café</span>
+        </a>
+
+        <button class="navbar__toggle" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="navbar__menu">
+            <li><a href="{{ path('cafe_culture_index') }}" class="{{ app.request.get('_route') starts with 'cafe_culture_' ? 'active' : '' }}">Accueil</a></li>
+            {% for cat in cafe_categories %}
+            <li>
+                <a href="{{ path('cafe_culture_category', {slug: cat.slug}) }}">
+                    <i class="fas {{ cat.icon }}" style="color: {{ cat.color }}"></i>
+                    {{ cat.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <form class="navbar__search" action="{{ path('cafe_culture_search') }}" method="get">
+            <input type="search" name="q" placeholder="Rechercher un café, une recette…" aria-label="Recherche">
+            <button type="submit" aria-label="Lancer la recherche"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+</nav>
+
+{# ── Messages flash ────────────────────────────────────────────── #}
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="flash flash--{{ type }}" role="alert">
+            <i class="fas {{ type == 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' }}"></i>
+            {{ message }}
+            <button class="flash__close" aria-label="Fermer">×</button>
+        </div>
+    {% endfor %}
+{% endfor %}
+
+{# ── Contenu principal ─────────────────────────────────────────── #}
+<main id="main-content">
+    {% block body %}{% endblock %}
+</main>
+
+{# ── Footer ────────────────────────────────────────────────────── #}
+<footer class="footer">
+    <div class="container footer__inner">
+        <div class="footer__col">
+            <h3 class="footer__title">☕ La Culture du Café</h3>
+            <p>Votre guide de référence pour explorer le monde fascinant du café : de la plante à la tasse.</p>
+        </div>
+
+        <div class="footer__col">
+            <h4 class="footer__heading">Catégories</h4>
+            <ul class="footer__links">
+                {% for cat in cafe_categories %}
+                <li><a href="{{ path('cafe_culture_category', {slug: cat.slug}) }}">{{ cat.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="footer__col">
+            <h4 class="footer__heading">Articles récents</h4>
+            <ul class="footer__links">
+                {% for article in cafe_recent %}
+                <li>
+                    <a href="{{ path('cafe_culture_article_show', {slug: article.slug}) }}">
+                        {{ article.title|length > 50 ? article.title|slice(0,50) ~ '…' : article.title }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="footer__col">
+            <h4 class="footer__heading">Tags populaires</h4>
+            <div class="tag-cloud">
+                {% for tag in cafe_popular_tags %}
+                <a class="tag" href="{{ path('cafe_culture_tag', {slug: tag.slug}) }}">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="footer__bottom">
+        <p>© {{ "now"|date("Y") }} La Culture du Café — Fait avec ❤️ et beaucoup de caféine</p>
+        <p>Bundle Symfony par <a href="https://packagist.org/packages/cafe-culture/blog-bundle">cafe-culture/blog-bundle</a></p>
+    </div>
+</footer>
+
+<script src="{{ asset('bundles/cafeculturebundle/js/app.js') }}" defer></script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

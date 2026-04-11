@@ -1,0 +1,16 @@
+{# admin/partials/sidebar.html.twig #}
+<aside class="admin-sidebar">
+    <nav class="admin-nav">
+        <a class="admin-nav__brand" href="{{ path('cafe_culture_admin_dashboard') }}">☕ Admin Café</a>
+        <ul>
+            <li><a href="{{ path('cafe_culture_admin_dashboard') }}" class="{{ app.request.get('_route') == 'cafe_culture_admin_dashboard' ? 'active' : '' }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+            <li><a href="{{ path('cafe_culture_admin_articles_index') }}" class="{{ 'cafe_culture_admin_article' in app.request.get('_route') ? 'active' : '' }}"><i class="fas fa-newspaper"></i> Articles</a></li>
+            <li><a href="{{ path('cafe_culture_admin_article_new') }}" class="{{ app.request.get('_route') == 'cafe_culture_admin_article_new' ? 'active' : '' }}"><i class="fas fa-plus"></i> Nouvel article</a></li>
+            <li><a href="{{ path('cafe_culture_admin_categories_index') }}" class="{{ 'cafe_culture_admin_categor' in app.request.get('_route') ? 'active' : '' }}"><i class="fas fa-th-list"></i> Catégories</a></li>
+            <li><a href="{{ path('cafe_culture_admin_comments_index') }}" class="{{ 'cafe_culture_admin_comment' in app.request.get('_route') ? 'active' : '' }}"><i class="fas fa-comments"></i> Commentaires</a></li>
+            <li class="admin-nav__divider"></li>
+            <li><a href="{{ path('cafe_culture_index') }}" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le blog</a></li>
+            <li><a href="{{ path('cafe_culture_rss') }}" target="_blank"><i class="fas fa-rss"></i> Flux RSS</a></li>
+        </ul>
+    </nav>
+</aside>

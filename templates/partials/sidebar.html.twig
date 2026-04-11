@@ -1,0 +1,68 @@
+{# partials/sidebar.html.twig #}
+
+{# Articles les plus vus #}
+<div class="sidebar__widget">
+    <h3 class="sidebar__title"><i class="fas fa-fire"></i> Les plus lus</h3>
+    <ul class="sidebar__list">
+        {% for art in cafe_most_viewed %}
+        <li class="sidebar__item">
+            <a href="{{ path('cafe_culture_article_show', {slug: art.slug}) }}">{{ art.title }}</a>
+            <span class="sidebar__meta"><i class="fas fa-eye"></i> {{ art.views }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{# Catégories #}
+<div class="sidebar__widget">
+    <h3 class="sidebar__title"><i class="fas fa-th-list"></i> Catégories</h3>
+    <ul class="sidebar__categories">
+        {% for cat in cafe_categories %}
+        <li>
+            <a class="sidebar__cat" href="{{ path('cafe_culture_category', {slug: cat.slug}) }}" style="--cat-color: {{ cat.color }}">
+                <i class="fas {{ cat.icon }}"></i>
+                <span>{{ cat.name }}</span>
+                <span class="sidebar__cat-count">{{ cat.getPublishedArticlesCount() }}</span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{# Articles récents #}
+<div class="sidebar__widget">
+    <h3 class="sidebar__title"><i class="fas fa-clock"></i> Articles récents</h3>
+    <ul class="sidebar__list">
+        {% for art in cafe_recent %}
+        <li class="sidebar__item">
+            <a href="{{ path('cafe_culture_article_show', {slug: art.slug}) }}">{{ art.title }}</a>
+            {% if art.publishedAt %}
+            <time class="sidebar__meta">{{ art.publishedAt|date('d/m/Y') }}</time>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{# Nuage de tags #}
+<div class="sidebar__widget">
+    <h3 class="sidebar__title"><i class="fas fa-tags"></i> Tags</h3>
+    <div class="tag-cloud">
+        {% for tag in cafe_popular_tags %}
+        <a class="tag" href="{{ path('cafe_culture_tag', {slug: tag.slug}) }}">{{ tag.name }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+{# Carte des origines #}
+<div class="sidebar__widget sidebar__widget--origins">
+    <h3 class="sidebar__title"><i class="fas fa-globe"></i> Origines du café</h3>
+    <div class="origins-grid">
+        {% set origins = ['Éthiopie', 'Colombie', 'Brésil', 'Kenya', 'Guatemala', 'Costa Rica', 'Pérou', 'Jamaïque'] %}
+        {% for origin in origins %}
+        <a class="origin-chip" href="{{ path('cafe_culture_origin', {origin: origin}) }}">
+            {{ coffee_flag(origin) }} {{ origin }}
+        </a>
+        {% endfor %}
+    </div>
+</div>

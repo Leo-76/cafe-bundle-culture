@@ -1,0 +1,24 @@
+{
+    "aliases": ["cafe-culture-blog", "cafe-blog"],
+    "manifest": {
+        "bundles": {
+            "CafeCulture\\BlogBundle\\CafeCultureBundle": ["all"]
+        },
+        "copy-from-recipe": {
+            "config/packages/cafe_culture.yaml": "config/packages/cafe_culture.yaml",
+            "config/routes/cafe_culture.yaml": "config/routes/cafe_culture.yaml"
+        },
+        "post-install-output": [
+            "",
+            "  <bg=blue;fg=white>  CafeCultureBundle installe avec succes  </>",
+            "",
+            "  Executez maintenant :",
+            "    <comment>php bin/console cafe:install --fixtures</comment>",
+            "    <comment>php bin/console cafe:check</comment>",
+            "",
+            "  Blog : <comment>http://localhost/blog</comment>",
+            "  Admin : <comment>http://localhost/admin/cafe</comment>",
+            ""
+        ]
+    }
+}

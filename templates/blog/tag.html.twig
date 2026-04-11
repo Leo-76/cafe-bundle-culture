@@ -1,0 +1,18 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Tag : {{ tag_slug }} — La Culture du Café{% endblock %}
+
+{% block body %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-header__title"><i class="fas fa-tag"></i> #{{ tag_slug }}</h1>
+        <p class="page-header__count">{{ articles|length }} article{{ articles|length > 1 ? 's' : '' }}</p>
+    </header>
+    <div class="articles-grid">
+        {% for article in articles %}
+        {% include '@CafeCulture/partials/article_card.html.twig' with {article: article} %}
+        {% else %}
+        <div class="empty-state"><p>Aucun article avec ce tag.</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

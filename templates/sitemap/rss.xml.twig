@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>La Culture du Café</title>
+        <link>{{ siteUrl }}</link>
+        <description>Le blog de référence sur la culture du café : origines, torréfaction, recettes et méthodes de préparation.</description>
+        <language>fr-FR</language>
+        <lastBuildDate>{{ "now"|date("r") }}</lastBuildDate>
+        <atom:link href="{{ feedUrl }}" rel="self" type="application/rss+xml"/>
+        <image>
+            <url>{{ siteUrl }}bundles/cafeculturebundle/images/logo.png</url>
+            <title>La Culture du Café</title>
+            <link>{{ siteUrl }}</link>
+        </image>
+{% for article in articles %}
+        <item>
+            <title><![CDATA[{{ article.title }}]]></title>
+            <link>{{ url('cafe_culture_article_show', {slug: article.slug}) }}</link>
+            <guid isPermaLink="true">{{ url('cafe_culture_article_show', {slug: article.slug}) }}</guid>
+            <description><![CDATA[{{ article.excerpt ?? article.content|striptags|slice(0, 300) ~ '…' }}]]></description>
+            <pubDate>{{ article.publishedAt ? article.publishedAt|date("r") : article.createdAt|date("r") }}</pubDate>
+            {% if article.category %}
+            <category><![CDATA[{{ article.category.name }}]]></category>
+            {% endif %}
+            {% for tag in article.tags %}
+            <category><![CDATA[{{ tag.name }}]]></category>
+            {% endfor %}
+        </item>
+{% endfor %}
+    </channel>
+</rss>

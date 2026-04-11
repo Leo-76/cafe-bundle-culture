@@ -1,0 +1,20 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Cafés d'origine : {{ origin }} — La Culture du Café{% endblock %}
+
+{% block body %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-header__title">{{ coffee_flag(origin) }} Cafés d'origine : {{ origin }}</h1>
+        <p class="page-header__count">{{ articles|length }} article{{ articles|length > 1 ? 's' : '' }}</p>
+    </header>
+    <div class="articles-grid">
+        {% for article in articles %}
+        {% include '@CafeCulture/partials/article_card.html.twig' with {article: article} %}
+        {% else %}
+        <div class="empty-state">
+            <p>Aucun article sur les cafés de {{ origin }} pour le moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

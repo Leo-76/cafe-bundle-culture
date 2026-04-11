@@ -1,0 +1,43 @@
+{% extends '@CafeCulture/layout/base.html.twig' %}
+{% block title %}Recherche : "{{ query }}" — La Culture du Café{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <header class="page-header">
+        <h1 class="page-header__title">
+            <i class="fas fa-search"></i>
+            {% if query %}
+                Résultats pour « {{ query }} »
+            {% else %}
+                Recherche
+            {% endif %}
+        </h1>
+    </header>
+
+    <form class="search-form" action="{{ path('cafe_culture_search') }}" method="get">
+        <input class="search-form__input" type="search" name="q" value="{{ query }}" placeholder="Rechercher un café, une origine, une recette…" autofocus>
+        <button class="search-form__btn btn btn-coffee" type="submit">
+            <i class="fas fa-search"></i> Rechercher
+        </button>
+    </form>
+
+    {% if query %}
+    <p class="search-summary">
+        <strong>{{ articles|length }}</strong> résultat{{ articles|length > 1 ? 's' : '' }} trouvé{{ articles|length > 1 ? 's' : '' }}
+    </p>
+
+    <div class="articles-grid">
+        {% for article in articles %}
+        {% include '@CafeCulture/partials/article_card.html.twig' with {article: article} %}
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-state__icon">🔍</span>
+            <p>Aucun résultat pour « {{ query }} ». Essayez avec d'autres mots-clés.</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
