@@ -1,5 +1,5 @@
 {
-    "name": "leo-76/cafe-bundle-culture",
+    "name": "cafe-culture/blog-bundle",
     "description": "Un bundle Symfony complet pour un blog dédié à la culture du café : origines, torréfaction, méthodes de préparation et recettes.",
     "type": "symfony-bundle",
     "license": "MIT",
