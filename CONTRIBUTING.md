@@ -1,6 +1,6 @@
 # Contribuer à CafeCultureBundle
 
-Merci de votre intérêt pour ce projet ! ☕  
+Merci de votre intérêt pour ce projet !  
 Voici les règles et processus pour contribuer efficacement.
 
 ---
